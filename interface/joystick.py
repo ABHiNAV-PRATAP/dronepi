@@ -1,24 +1,16 @@
 from PySide2.QtGui import *
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
-from enum import Enum
 import math
-
-class Direction(Enum):
-
-    Left = 0
-    Right = 1
-    Up = 2
-    Down = 3
 
 
 class Joystick(QWidget):
     def __init__(self, parent=None):
         super(Joystick, self).__init__(parent)
-        self.setMinimumSize(100, 100)
+        self.setMinimumSize(200, 200)
         self.movingOffset = QPointF(0, 0)
         self.grabCenter = False
-        self.__maxDistance = 50
+        self.__maxDistance = 70
 
     def paintEvent(self, event):
         painter = QPainter(self)
