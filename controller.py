@@ -1,5 +1,5 @@
-
 from drone import Drone
+from utils.client import Client
 
 pFR = 0
 pFL = 0
@@ -11,9 +11,13 @@ pitch = 0
 roll = 0
 thrust = 0
 
+client = Client(5005, '192.168.115.103', set)
+
+
 def setThrottle(t):
         thrust = t
         pFR, pFL, pBR, pBL = thrust, thrust, thrust, thrust
+
 
 def setPitch(y):
         pitch = abs(y) * 100

@@ -2,9 +2,10 @@ from utils.tcpcom import TCPClient
 
 
 class Client:
-    def __init__(self, port, ip):
+    def __init__(self, port, ip, callback):
         self.client = TCPClient(ip, port, stateChanged=self.onStateChanged)
         self.isConnected = False
+        self.callback = callback
 
     def onStateChanged(self, state, msg):
         if state == "LISTENING":
@@ -16,5 +17,6 @@ class Client:
             self.isConnected = False
             print("DEBUG: Client:-- Connection lost.")
         elif state == "MESSAGE":
-            print("DEBUG: Client:-- Message received: ", msg)
-            return msg
+            # print("DEBUG: Client:-- Message received: ", msg)
+            # TODO: Some sort of processing on msg in order to satisfy parameter requirements of the callback function
+            self.callback(msg)
