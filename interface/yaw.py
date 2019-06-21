@@ -3,9 +3,9 @@ from PySide2.QtWidgets import *
 
 
 class YawController(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, server, parent=None):
         super(YawController, self).__init__(parent)
-
+        self.s = server
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(-10)
         self.slider.setMaximum(10)
@@ -23,4 +23,4 @@ class YawController(QWidget):
         self.slider.setSliderPosition(0)
 
     def slider_drag(self):
-        print('yaw: ' + str(self.slider.value()/10))
+        self.s.send('yaw: ' + str(self.slider.value()/10))

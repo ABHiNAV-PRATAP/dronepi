@@ -5,7 +5,8 @@ import math
 
 
 class Joystick(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, server, parent=None):
+        self.s = server
         super(Joystick, self).__init__(parent)
         self.setMinimumSize(200, 200)
         self.movingOffset = QPointF(0, 0)
@@ -44,7 +45,7 @@ class Joystick(QWidget):
         x = distance * math.cos(angle)
         y = distance * math.sin(angle)
 
-        return x, y
+        return 'x: ' + str(x) + ' y:' + str(y)
 
     def mousePressEvent(self, ev):
         self.grabCenter = self._centerEllipse().contains(ev.pos())
@@ -59,4 +60,4 @@ class Joystick(QWidget):
         if self.grabCenter:
             self.movingOffset = self._boundJoystick(event.pos())
             self.update()
-        print(self.joystickDirection())
+        self.s.send(self.joystickDirection())

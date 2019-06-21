@@ -4,9 +4,9 @@ from PySide2.QtGui import *
 
 
 class Throttle(QWidget):
-    def __init__(self):
+    def __init__(self, server):
         QWidget.__init__(self)
-
+        self.s = server
         self.slider = QSlider(Qt.Vertical)
         self.slider.setMinimum(0)
         self.slider.setMaximum(100)
@@ -24,7 +24,7 @@ class Throttle(QWidget):
     def slider_moved(self):
         t = self.slider.value()
         self.text.setText(str(t) + '%')
-        print('throttle: ' + str(t))
+        self.s.send('throttle: ' + str(t))
 
 
 
