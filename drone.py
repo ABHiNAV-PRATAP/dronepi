@@ -1,96 +1,83 @@
 import RPi.GPIO as GPIO
 import time
 
-#set pins
-frontRightPin = 40 # 1
-backRightPin = 38 # 2
-frontLeftPin = 36 # 3
-backLeftPin = 3 # 4
+class Drone:
+    def __init__(self, frontRightPin, backRightPin, frontLeftPin, backLeftPin, auxPin, max_throttle):
+        self.frontRightPin = frontRightPin
+        self.backRightPin = backRightPin
+        self.frontLeftPin = frontLeftPin
+        self.backLeftPin = backLeftPin
 
-aux = 13
+        self.auxPin = auxPin
 
-min_throttle = 5
-max_throttle = 9
+        self.min_throttle = 5
+        self.max_throttle = max_throttle
 
-percent = 0
+        self.pFR = 0
+        self.pBR = 0
+        self.pFL = 0
+        self.pBL = 0
 
-GPIO.cleanup()
+        GPIO.cleanup()
+        GPIO.setmode(GPIO.BOARD)
 
-GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.frontRightPin,GPIO.OUT)
+        GPIO.setup(self.backRightPin,GPIO.OUT)
+        GPIO.setup(self.frontLeftPin,GPIO.OUT)
+        GPIO.setup(self.backLeftPin,GPIO.OUT)
+        GPIO.setup(self.aux,GPIO.OUT)
 
-GPIO.setup(frontRightPin,GPIO.OUT)
-GPIO.setup(backRightPin,GPIO.OUT)
-GPIO.setup(frontLeftPin,GPIO.OUT)
-GPIO.setup(backLeftPin,GPIO.OUT)
-GPIO.setup(aux,GPIO.OUT)
+        self.mFR = GPIO.PWM(self.frontRightPin, 50)
+        self.mBR = GPIO.PWM(self.backRightPin, 50)
+        self.mFL = GPIO.PWM(self.frontLeftPin, 50)
+        self.mBL = GPIO.PWM(self.backLeftPin, 50)
+        self.aux = GPIO.PWM(self.auxPin, 50)
 
-mFR = GPIO.PWM(frontRightPin, 50)
-mBR = GPIO.PWM(backRightPin, 50)
-mFL = GPIO.PWM(frontLeftPin, 50)
-mBL = GPIO.PWM(backLeftPin, 50)
-aux1 = GPIO.PWM(aux, 50)
+        self.mFR.start(0)
+        self.mBR.start(0)
+        self.mFL.start(0)
+        self.mBL.start(0)
+        self.aux.start(7)
 
-mFR.start(0)
-mBR.start(0)
-mFL.start(0)
-mBL.start(0)
-aux1.start(7)
+    def translate(value, leftMin, leftMax, rightMin, rightMax):
+        # Figure out how 'wide' each range is
+        leftSpan = leftMax - leftMin
+        rightSpan = rightMax - rightMin
 
-def translate(value, leftMin, leftMax, rightMin, rightMax):
-    # Figure out how 'wide' each range is
-    leftSpan = leftMax - leftMin
-    rightSpan = rightMax - rightMin
+        # Convert the left range into a 0-1 range (float)
+        valueScaled = float(value - leftMin) / float(leftSpan)
 
-    # Convert the left range into a 0-1 range (float)
-    valueScaled = float(value - leftMin) / float(leftSpan)
+        # Convert the 0-1 range into a value in the right range.
+        return rightMin + (valueScaled * rightSpan)
 
-    # Convert the 0-1 range into a value in the right range.
-    return rightMin + (valueScaled * rightSpan)
+        
+    def setMotor(self, p, motor):
+        dutyCycle = translate(p, 0, 100, self.min_throttle, self.max_throttle)
+        motor.ChangeDutyCycle(dutyCycle)
+        return
 
-    
-def setMotor(p, motor):
-    dutyCycle = translate(p, 0, 100, min_throttle, max_throttle)
-    motor.ChangeDutyCycle(dutyCycle)
-    return
+    def arm(self, p):
+            print("Arm sequence.......")
+            print("frontRight")
+            self.setMotor(p, self.mFR)
+            time.sleep(1)
+            print("backRight")
+            self.setMotor(p, self.mBR)
+            time.sleep(1)
+            print("frontLeft")
+            self.setMotor(p, self.mFL)
+            time.sleep(1)
+            print("backLeft")
+            self.setMotor(p, self.mBL)
+            time.sleep(1)
 
-def arm(p):
-	print("Arm sequence.......")
-	print("frontRight")
-	setMotor(p, mFR)
-	time.sleep(1)
-	print("backRight")
-	setMotor(p, mBR)
-	time.sleep(1)
-	print("frontLeft")
-	setMotor(p, mFL)
-	time.sleep(1)
-	print("backLeft")
-	setMotor(p, mBL)
-	time.sleep(1)
+    def setAll(self, pFR, pFL, pBL, pBR):
+            dcFR = translate(pFR, 0, 100, self.min_throttle, self.max_throttle)
+            dcFL = translate(pFL, 0, 100, self.min_throttle, self.max_throttle)
+            dcBR = translate(pBR, 0, 100, self.min_throttle, self.max_throttle)
+            dcBL = translate(pBL, 0, 100, self.min_throttle, self.max_throttle)
+            self.mFR.ChangeDutyCycle(dcFR)
+            self.mBR.ChangeDutyCycle(dcBR)
+            self.mFL.ChangeDutyCycel(dcFL)
+            self.mBL.ChangeDutyCycle(dcBL)
 
-def setAll(p):
-	dutyCycle = translate(p, 0, 100, min_throttle, max_throttle)
-	mFR.ChangeDutyCycle(dutyCycle)
-	mBR.ChangeDutyCycle(dutyCycle)
-	mFL.ChangeDutyCycle(dutyCycle)
-	mBL.ChangeDutyCycle(dutyCycle)
-	print("Speed: " + str(p) + "% / " + str(dutyCycle))
-	return
-
-arm(5)
-
-time.sleep(1)
-
-while True:
-	inp =  input()
-	if inp == "i":
-		percent += 10
-	elif inp == "d":
-		percent -= 10
-	elif inp == "stop":
-		percent = 0
-		setAll(percent)
-		break 
-	setAll(percent)
-
-GPIO.cleanup()
