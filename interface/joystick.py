@@ -4,6 +4,11 @@ from PySide2.QtWidgets import *
 import math
 
 
+class Point:
+    x = 0
+    y = 0
+
+
 class Joystick(QWidget):
     def __init__(self, server, parent=None):
         self.s = server
@@ -42,10 +47,12 @@ class Joystick(QWidget):
         angle = normVector.angle()
 
         distance = min(currentDistance / self.__maxDistance, 1.0)
-        x = distance * math.cos(angle)
-        y = distance * math.sin(angle)
 
-        return 'x: ' + str(x) + ' y:' + str(y)
+        pt = Point()
+        pt.x = distance * math.cos(angle)
+        pt.y = distance * math.sin(angle)
+
+        return pt
 
     def mousePressEvent(self, ev):
         self.grabCenter = self._centerEllipse().contains(ev.pos())
@@ -60,4 +67,7 @@ class Joystick(QWidget):
         if self.grabCenter:
             self.movingOffset = self._boundJoystick(event.pos())
             self.update()
-        self.s.send(self.joystickDirection())
+
+        pt = self.joystickDirection()
+        self.s.send('<x>' + str(pt.x))
+        self.s.send('<y>' + str(pt.y))
