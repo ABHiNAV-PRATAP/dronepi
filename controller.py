@@ -1,5 +1,6 @@
 from drone import Drone
 from utils.client import Client
+from time import *
 
 throttle = 0
 MAX_THROTTLE = 8
@@ -35,5 +36,18 @@ def set(pFR, pFL, pBL, pBR):
 
         drone.setAll(pFR, pFL, pBL, pBR)
 
+def main():
+        client = Client(5005, '192.168.115.103', get)
+        while True:
+                print('Connecting...')
+                rc = client.client.connect()
+                sleep(0.01)
+                if rc:
+                        isConnected = True
+                        while isConnected:
+                                sleep(0.001)
+                else:
+                        print("Client:-- Connection failed")
+                        sleep(0.1)
 
-client = Client(5005, '192.168.115.103', get)
+main()

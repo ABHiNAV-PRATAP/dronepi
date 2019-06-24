@@ -9,7 +9,7 @@ class Client:
 
     def onStateChanged(self, state, msg):
         if state == "LISTENING":
-            print("DEBUG: Client:-- Listening...")
+            print("DEBUG: Client:-- Waiting...")
         elif state == "CONNECTED":
             self.isConnected = True
             print("DEBUG: Client:-- Connected to ", msg)
