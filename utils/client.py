@@ -22,9 +22,9 @@ class Client:
             y = 0
             throttle = None
             yaw = 0
-            msg = msg.split('>')
-            header = msg[0]
-            value = float(msg[1])
+            message = msg.split('>')
+            header = message[0]
+            value = float(message[1])
             if header == 'x':
                 x = value
             elif header == 'y':
@@ -33,5 +33,4 @@ class Client:
                 throttle = value
             elif header == 'yaw':
                 yaw = value
-            # TODO: Some sort of processing on msg in order to satisfy parameter requirements of the callback function
             self.callback(x, y, throttle, yaw)

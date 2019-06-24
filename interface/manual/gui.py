@@ -26,7 +26,7 @@ class eStop(QtWidgets.QWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    s = Server(22000)
+    s = Server(5005)
     win = QtWidgets.QWidget()
 
     throttle = Throttle(s)
