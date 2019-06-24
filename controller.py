@@ -15,7 +15,8 @@ def get(x, y, t, yw):
         yaw = yw * MAX_MSPEED
         pitch = y * MAX_MSPEED
         roll = x * MAX_MSPEED
-        throttle = t
+        if t is not None:
+                throttle = t
 
         compute(yaw, pitch, roll, throttle)
 
