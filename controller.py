@@ -1,70 +1,38 @@
 from drone import Drone
 from utils.client import Client
 
-pFR = 0
-pFL = 0
-pBR = 0
-pBL = 0
+throttle = 0
+MAX_THROTTLE = 8
+MAX_MSPEED = 20
 
-yaw = 0
-pitch = 0
-roll = 0
-thrust = 0
-
-client = Client(5005, '192.168.115.103', set)
+drone = Drone(0, 0, 0, 0, 0, MAX_THROTTLE)
 
 
-def setThrottle(t):
-        thrust = t
-        pFR, pFL, pBR, pBL = thrust, thrust, thrust, thrust
+def get(x, y, t, yw):
+        global throttle
+        global MAX_MSPEED
+
+        yaw = yw * MAX_MSPEED
+        pitch = y * MAX_MSPEED
+        roll = x * MAX_MSPEED
+        throttle = t
+
+        compute(yaw, pitch, roll, throttle)
 
 
-def setPitch(y):
-        pitch = abs(y) * 100
+def compute(yaw, pitch, roll, thrust):
+        pFR = thrust - pitch - roll + yaw
+        pFL = thrust - pitch + roll - yaw
+        pBR = thrust + pitch - roll - yaw
+        pBL = thrust + pitch + roll + yaw
 
-        if y > 0: # forward
-                pBL += pitch
-                pBR += pitch
-                pFL -= pitch
-                pFR -= pitch
-        elif y < 0: # backward
-                pFR += pitch
-                pFL += pitch
-                pBR -= pitch
-                pBL -= pitch
+        set(pFR, pFL, pBL, pBR)
 
-def setRoll(x):
-        roll = abs(x) * 100
-        
-        if x > 0:
-                pBR -= roll
-                pFR -= roll
-                pFL += roll
-                pBL += roll
-        elif x < 0:
-                pBR += roll
-                pFR += roll
-                pBL -= roll
-                pFL -= roll
 
-def setYaw(x):
-        yaw = abs(x) * 100
-        
-        if x > 0:
-                pFR += yaw
-                pBL += yaw
-                pFL -= yaw
-                pBR-= yaw
-        elif x < 0:
-                pFR -= yaw
-                pBL -= yaw
-                pFL += yaw
-                pBR += yaw
+def set(pFR, pFL, pBL, pBR):
+        global drone
 
-def set(x, y, throttle, yaww):
-        setThrottle(throttle)
-        setYaw(yaww)
-        setRoll(x)
-        setPitch(y)
-        Drone.setAll(pFR, pFL, pBL, pBR)
+        drone.setAll(pFR, pFL, pBL, pBR)
 
+
+client = Client(5005, '192.168.115.103', get)

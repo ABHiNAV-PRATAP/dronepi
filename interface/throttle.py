@@ -24,7 +24,7 @@ class Throttle(QWidget):
     def slider_moved(self):
         t = self.slider.value()
         self.text.setText(str(t) + '%')
-        self.s.send('<throttle>' + str(t))
+        self.s.send('throttle>' + str(t))
 
 
 

@@ -69,5 +69,5 @@ class Joystick(QWidget):
             self.update()
 
         pt = self.joystickDirection()
-        self.s.send('<x>' + str(pt.x))
-        self.s.send('<y>' + str(pt.y))
+        self.s.send('x>' + str(pt.x))
+        self.s.send('y>' + str(pt.y))

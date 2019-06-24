@@ -23,4 +23,4 @@ class YawController(QWidget):
         self.slider.setSliderPosition(0)
 
     def slider_drag(self):
-        self.s.send('<yaw>' + str(self.slider.value()/10))
+        self.s.send('yaw>' + str(self.slider.value()/10))

@@ -21,7 +21,7 @@ class eStop(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
     def stop(self):
-        self.s.send('<estop>')
+        self.s.send('ESTOP')
 
 
 if __name__ == "__main__":

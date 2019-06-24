@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
+
 class Drone:
     def __init__(self, frontRightPin, backRightPin, frontLeftPin, backLeftPin, auxPin, max_throttle):
         self.frontRightPin = frontRightPin
@@ -50,34 +51,21 @@ class Drone:
         # Convert the 0-1 range into a value in the right range.
         return rightMin + (valueScaled * rightSpan)
 
-        
     def setMotor(self, p, motor):
-        dutyCycle = translate(p, 0, 100, self.min_throttle, self.max_throttle)
+        dutyCycle = self.translate(p, 0, 100, self.min_throttle, self.max_throttle)
         motor.ChangeDutyCycle(dutyCycle)
         return
 
     def arm(self, p):
             print("Arm sequence.......")
-            print("frontRight")
             self.setMotor(p, self.mFR)
-            time.sleep(1)
-            print("backRight")
             self.setMotor(p, self.mBR)
-            time.sleep(1)
-            print("frontLeft")
             self.setMotor(p, self.mFL)
-            time.sleep(1)
-            print("backLeft")
             self.setMotor(p, self.mBL)
             time.sleep(1)
 
     def setAll(self, pFR, pFL, pBL, pBR):
-            dcFR = translate(pFR, 0, 100, self.min_throttle, self.max_throttle)
-            dcFL = translate(pFL, 0, 100, self.min_throttle, self.max_throttle)
-            dcBR = translate(pBR, 0, 100, self.min_throttle, self.max_throttle)
-            dcBL = translate(pBL, 0, 100, self.min_throttle, self.max_throttle)
-            self.mFR.ChangeDutyCycle(dcFR)
-            self.mBR.ChangeDutyCycle(dcBR)
-            self.mFL.ChangeDutyCycel(dcFL)
-            self.mBL.ChangeDutyCycle(dcBL)
-
+            self.setMotor(pFR, self.mFR)
+            self.setMotor(pFL, self.mFL)
+            self.setMotor(pBL, self.mBL)
+            self.setMotor(pBR, self.mBR)
