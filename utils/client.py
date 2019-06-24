@@ -17,14 +17,13 @@ class Client:
             self.isConnected = False
             print("DEBUG: Client:-- Connection lost.")
         elif state == "MESSAGE":
-            # print("DEBUG: Client:-- Message received: ", msg)
             x = 0
             y = 0
             throttle = None
             yaw = 0
             message = msg.split('>')
             header = message[0]
-            value = float(message[1])
+            value = round(float(message[1]), 2)
             if header == 'x':
                 x = value
             elif header == 'y':

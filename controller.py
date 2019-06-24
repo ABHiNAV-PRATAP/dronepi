@@ -23,10 +23,10 @@ def get(x, y, t, yw):
 
 
 def compute(yaw, pitch, roll, thrust):
-        pFR = thrust - pitch - roll + yaw
-        pFL = thrust - pitch + roll - yaw
-        pBR = thrust + pitch - roll - yaw
-        pBL = thrust + pitch + roll + yaw
+        pFR = thrust + yaw + pitch + roll
+        pFL = thrust - yaw + pitch - roll
+        pBR = thrust - yaw - pitch + roll
+        pBL = thrust + yaw - pitch - roll
 
         set(pFR, pFL, pBL, pBR)
 
