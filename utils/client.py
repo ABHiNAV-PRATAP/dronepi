@@ -32,4 +32,6 @@ class Client:
                 throttle = value
             elif header == 'yaw':
                 yaw = value
+            elif header == 'ESTOP':
+                throttle = 0
             self.callback(x, y, throttle, yaw)

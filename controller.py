@@ -3,7 +3,7 @@ from utils.client import Client
 from time import sleep
 
 throttle = 0
-MAX_THROTTLE = 8
+MAX_THROTTLE = 10
 MAX_MSPEED = 20
 
 drone = Drone(0, 0, 0, 0, 0, MAX_THROTTLE)

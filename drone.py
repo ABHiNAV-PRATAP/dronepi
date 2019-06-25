@@ -14,19 +14,14 @@ class Drone:
         self.min_throttle = 5
         self.max_throttle = max_throttle
 
-        self.pFR = 0
-        self.pBR = 0
-        self.pFL = 0
-        self.pBL = 0
-
         GPIO.cleanup()
         GPIO.setmode(GPIO.BOARD)
 
-        GPIO.setup(self.frontRightPin,GPIO.OUT)
-        GPIO.setup(self.backRightPin,GPIO.OUT)
-        GPIO.setup(self.frontLeftPin,GPIO.OUT)
-        GPIO.setup(self.backLeftPin,GPIO.OUT)
-        GPIO.setup(self.aux,GPIO.OUT)
+        GPIO.setup(self.frontRightPin, GPIO.OUT)
+        GPIO.setup(self.backRightPin, GPIO.OUT)
+        GPIO.setup(self.frontLeftPin, GPIO.OUT)
+        GPIO.setup(self.backLeftPin, GPIO.OUT)
+        GPIO.setup(self.auxPin, GPIO.OUT)
 
         self.mFR = GPIO.PWM(self.frontRightPin, 50)
         self.mBR = GPIO.PWM(self.backRightPin, 50)
@@ -40,7 +35,7 @@ class Drone:
         self.mBL.start(0)
         self.aux.start(7)
 
-    def translate(value, leftMin, leftMax, rightMin, rightMax):
+    def translate(self, value, leftMin, leftMax, rightMin, rightMax):
         # Figure out how 'wide' each range is
         leftSpan = leftMax - leftMin
         rightSpan = rightMax - rightMin
