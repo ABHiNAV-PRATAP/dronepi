@@ -11,7 +11,7 @@ class Drone:
 
         self.auxPin = auxPin
 
-        self.min_throttle = 5
+        self.min_throttle = 4
         self.max_throttle = max_throttle
 
         GPIO.cleanup()

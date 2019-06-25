@@ -6,8 +6,18 @@ throttle = 0
 MAX_THROTTLE = 10
 MAX_MSPEED = 20
 
-drone = Drone(0, 0, 0, 0, 0, MAX_THROTTLE)
+drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
 
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+        # Figure out how 'wide' each range is
+        leftSpan = leftMax - leftMin
+        rightSpan = rightMax - rightMin
+
+        # Convert the left range into a 0-1 range (float)
+        valueScaled = float(value - leftMin) / float(leftSpan)
+
+        # Convert the 0-1 range into a value in the right range.
+        return rightMin + (valueScaled * rightSpan)
 
 def get(x, y, t, yw):
         global throttle
@@ -28,6 +38,17 @@ def compute(yaw, pitch, roll, thrust):
         pBR = thrust - yaw - pitch + roll
         pBL = thrust + yaw - pitch - roll
 
+        Max = max([pFR,pFL,pBR,pBL])
+
+        if Max > 100:
+
+              pFR=translate(pFR,.1,Max,.1,100);
+              pFL=translate(pFL,.1,Max,.1,100);
+              pBR=translate(pBR,.1,Max,.1,100);
+              pBL=translate(pBL,.1,Max,.1,100);
+
+
+
         set(pFR, pFL, pBL, pBR)
 
 
@@ -38,7 +59,7 @@ def set(pFR, pFL, pBL, pBR):
 
 
 def main():
-        c = Client(5005, '192.168.115.103', get)
+        c = Client(5005, '192.168.2.15', get)
         while True:
                 print('Connecting...')
                 rc = c.client.connect()
