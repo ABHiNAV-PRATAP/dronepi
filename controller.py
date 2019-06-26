@@ -4,7 +4,7 @@ from time import sleep
 
 throttle = 0
 MAX_THROTTLE = 10
-MAX_MSPEED = 20
+MAX_MSPEED = 20;
 
 drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
 
@@ -38,16 +38,14 @@ def compute(yaw, pitch, roll, thrust):
         pBR = thrust - yaw - pitch + roll
         pBL = thrust + yaw - pitch - roll
 
-        Max = max([pFR,pFL,pBR,pBL])
+        max_p = max([pFR, pFL, pBR, pBL])
 
-        if Max > 100:
+        if max_p > 100:
 
-              pFR=translate(pFR,.1,Max,.1,100);
-              pFL=translate(pFL,.1,Max,.1,100);
-              pBR=translate(pBR,.1,Max,.1,100);
-              pBL=translate(pBL,.1,Max,.1,100);
-
-
+              pFR = translate(pFR, .1, max_p, .1, 100)
+              pFL = translate(pFL, .1, max_p, .1, 100)
+              pBR = translate(pBR, .1, max_p, .1, 100)
+              pBL = translate(pBL, .1, max_p, .1, 100)
 
         set(pFR, pFL, pBL, pBR)
 
