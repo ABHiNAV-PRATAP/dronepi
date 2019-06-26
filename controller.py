@@ -4,7 +4,7 @@ from time import sleep
 
 throttle = 0
 MAX_THROTTLE = 10
-MAX_MSPEED = 20;
+MAX_MSPEED = 20
 
 drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
 
