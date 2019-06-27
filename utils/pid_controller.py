@@ -4,6 +4,7 @@ class pid_controller:
         self.kP = kP
         self.kD = kD
         self.kDT = kDT
+        self.prevOffset = 0
         self.desiredPos = None
 
     def updateOutput(self, currentPos):
