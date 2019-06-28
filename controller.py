@@ -8,9 +8,9 @@ from utils.client import Client
 from utils.pid_controller import pid_controller as PID
 import utils.BerryIMU.bmp280 as barometer
 
-throttle = 0
+manual = False
+
 MAX_THROTTLE = 10
-MAX_MSPEED = 20
 
 drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
 
@@ -19,7 +19,10 @@ r_pid = PID(0.1, 0.001, 0.1)
 p_pid = PID(0.1, 0.001, 0.1)
 y_pid = PID(0.1, 0.001, 0.1)
 
+# TODO: add pid loop to generate necessary roll and pitch references
+
 IMU.initIMU()
+
 
 def translate(value, leftMin, leftMax, rightMin, rightMax):
         # Figure out how 'wide' each range is
@@ -32,17 +35,17 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
         # Convert the 0-1 range into a value in the right range.
         return rightMin + (valueScaled * rightSpan)
 
+
 def getAltitude(bar):
-        return (10**(math.log10(barometer.read().pressure/ 1013.25)/ 5.2558797) - 1)/ (-6.8755856 * 10**-6)
+        return (10**(math.log10(bar/ 1013.25)/ 5.2558797) - 1)/ (-6.8755856 * 10**-6)
+
 
 def get(x, y, t, yw):
-        global throttle
-        # global MAX_MSPEED
-
+        # TODO: scale raw parameters into degrees
         yaw = y_pid.updateOutput(IMU.read().yaw, yw)
         pitch = p_pid.updateOutput(IMU.read().pitch, y)
         roll = r_pid.updateOutput(IMU.read().roll, x)
-        throttle = t_pid.updateOutput(getAltitude, t)
+        throttle = t_pid.updateOutput(getAltitude(barometer.read().pressure), t)
 
         compute(yaw, pitch, roll, throttle)
 
@@ -53,15 +56,6 @@ def compute(yaw, pitch, roll, thrust):
         pBR = thrust - yaw - pitch + roll
         pBL = thrust + yaw - pitch - roll
 
-        max_p = max([pFR, pFL, pBR, pBL])
-
-        if max_p > 100:
-
-              pFR = translate(pFR, .1, max_p, .1, 100)
-              pFL = translate(pFL, .1, max_p, .1, 100)
-              pBR = translate(pBR, .1, max_p, .1, 100)
-              pBL = translate(pBL, .1, max_p, .1, 100)
-
         set(pFR, pFL, pBL, pBR)
 
 
@@ -71,10 +65,15 @@ def set(pFR, pFL, pBL, pBR):
         drone.setAll(pFR, pFL, pBL, pBR)
 
 
-def main():
+def initCamera():
+        print('initializing camera')
+
+
+def initManual():
+        print('manual mode')
         c = Client(5005, '192.168.2.15', get)
         while True:
-                print('Connecting...')
+                print('Connecting to server...')
                 rc = c.client.connect()
                 sleep(0.01)
                 if rc:
@@ -82,7 +81,18 @@ def main():
                         while isConnected:
                                 sleep(0.001)
                 else:
-                        print("Client:-- Connection failed")
+                        print("Connection failed")
                         sleep(0.1)
 
-main()
+
+def initAuto():
+        print('autonomous mode')
+        while True:
+                print('')
+                # TODO: start looping PID with given desired position
+
+
+if manual:
+        initManual()
+else:
+        initAuto()
