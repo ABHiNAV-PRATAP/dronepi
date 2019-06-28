@@ -1,15 +1,11 @@
-from threading import Thread
-from time import sleep
-import math
+import time
 
-import utils.BerryIMU.berryIMU as IMU
+from utils.IMU import RTIMU
 from drone import Drone
 from utils.client import Client
 from utils.pid_controller import pid_controller as PID
-import utils.BerryIMU.bmp280 as barometer
 
 manual = False
-
 MAX_THROTTLE = 10
 
 drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
@@ -19,9 +15,10 @@ r_pid = PID(0.1, 0.001, 0.1)
 p_pid = PID(0.1, 0.001, 0.1)
 y_pid = PID(0.1, 0.001, 0.1)
 
-# TODO: add pid loop to generate necessary roll and pitch references
+IMU = RTIMU("RTIMULib")
+poll_interval = IMU.getRate()
 
-IMU.initIMU()
+# TODO: add pid loop to generate necessary roll and pitch references
 
 
 def translate(value, leftMin, leftMax, rightMin, rightMax):
@@ -36,22 +33,21 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
         return rightMin + (valueScaled * rightSpan)
 
 
-def getAltitude(bar):
-        return (10**(math.log10(bar/ 1013.25)/ 5.2558797) - 1)/ (-6.8755856 * 10**-6)
-
-
 def get(x, y, t, yw):
         x_scaled = translate(x, -1, 1, -20, 20)
         y_scaled = translate(y, -1, 1, -20, 20)
         yw_scaled = translate(yw, -1, 1, 0, 360)
 
         while True:
-                yaw = y_pid.updateOutput(IMU.read().yaw, yw_scaled)
-                pitch = p_pid.updateOutput(IMU.read().pitch, y_scaled)
-                roll = r_pid.updateOutput(IMU.read().roll, x_scaled)
-                throttle = t_pid.updateOutput(getAltitude(barometer.read().pressure), t)
+                rpy = IMU.getRPY()
+
+                yaw = y_pid.updateOutput(rpy.yaw, yw_scaled)
+                pitch = p_pid.updateOutput(rpy.pitch, y_scaled)
+                roll = r_pid.updateOutput(rpy.roll, x_scaled)
+                throttle = t_pid.updateOutput(IMU.getAltitude(), t)
 
                 compute(yaw, pitch, roll, throttle)
+                time.sleep(poll_interval * 1.0 / 1000.0)
 
 
 def compute(yaw, pitch, roll, thrust):
