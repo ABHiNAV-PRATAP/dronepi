@@ -41,13 +41,17 @@ def getAltitude(bar):
 
 
 def get(x, y, t, yw):
-        # TODO: scale raw parameters into degrees
-        yaw = y_pid.updateOutput(IMU.read().yaw, yw)
-        pitch = p_pid.updateOutput(IMU.read().pitch, y)
-        roll = r_pid.updateOutput(IMU.read().roll, x)
-        throttle = t_pid.updateOutput(getAltitude(barometer.read().pressure), t)
+        x_scaled = translate(x, -1, 1, -20, 20)
+        y_scaled = translate(y, -1, 1, -20, 20)
+        yw_scaled = translate(yw, -1, 1, 0, 360)
 
-        compute(yaw, pitch, roll, throttle)
+        while True:
+                yaw = y_pid.updateOutput(IMU.read().yaw, yw_scaled)
+                pitch = p_pid.updateOutput(IMU.read().pitch, y_scaled)
+                roll = r_pid.updateOutput(IMU.read().roll, x_scaled)
+                throttle = t_pid.updateOutput(getAltitude(barometer.read().pressure), t)
+
+                compute(yaw, pitch, roll, throttle)
 
 
 def compute(yaw, pitch, roll, thrust):
@@ -67,6 +71,7 @@ def set(pFR, pFL, pBL, pBR):
 
 def initCamera():
         print('initializing camera')
+        # TODO: initialize camera to return (x,y) position of target
 
 
 def initManual():
@@ -89,7 +94,7 @@ def initAuto():
         print('autonomous mode')
         while True:
                 print('')
-                # TODO: start looping PID with given desired position
+                # TODO: start looping PID with given desired position from camera
 
 
 if manual:
