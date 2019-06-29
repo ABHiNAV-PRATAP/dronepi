@@ -1,6 +1,6 @@
 import time
 
-from utils.IMU import RTIMU
+from utils.IMU import IMU
 from drone import Drone
 from utils.client import Client
 from utils.pid_controller import pid_controller as PID
@@ -15,8 +15,8 @@ r_pid = PID(0.1, 0.001, 0.1)
 p_pid = PID(0.1, 0.001, 0.1)
 y_pid = PID(0.1, 0.001, 0.1)
 
-IMU = RTIMU("RTIMULib")
-poll_interval = IMU.getRate()
+imu = IMU("RTIMULib")
+poll_interval = imu.getRate()
 
 # TODO: add pid loop to generate necessary roll and pitch references
 
@@ -39,12 +39,13 @@ def get(x, y, t, yw):
         yw_scaled = translate(yw, -1, 1, 0, 360)
 
         while True:
-                rpy = IMU.getRPY()
+                rpy = imu.getRPY()
+                quat = imu.getQuaternion()
 
                 yaw = y_pid.updateOutput(rpy.yaw, yw_scaled)
                 pitch = p_pid.updateOutput(rpy.pitch, y_scaled)
                 roll = r_pid.updateOutput(rpy.roll, x_scaled)
-                throttle = t_pid.updateOutput(IMU.getAltitude(), t)
+                throttle = t_pid.updateOutput(imu.getAltitude(), t)
 
                 compute(yaw, pitch, roll, throttle)
                 time.sleep(poll_interval * 1.0 / 1000.0)
@@ -76,14 +77,14 @@ def initManual():
         while True:
                 print('Connecting to server...')
                 rc = c.client.connect()
-                sleep(0.01)
+                time.sleep(0.01)
                 if rc:
                         isConnected = True
                         while isConnected:
-                                sleep(0.001)
+                                time.sleep(0.001)
                 else:
                         print("Connection failed")
-                        sleep(0.1)
+                        time.sleep(0.1)
 
 
 def initAuto():

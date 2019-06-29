@@ -8,17 +8,23 @@ class RPY():
     pitch = 0
     yaw = 0
 
-class RTIMU:
+class Quaternion():
+    x = 0
+    y = 0
+    z = 0
+    scalar = 0
+
+class IMU():
     def __init__(self, SETTINGS_FILE):
         print("Using settings file " + SETTINGS_FILE + ".ini")
         if not os.path.exists(SETTINGS_FILE + ".ini"):
             print("Settings file does not exist, will be created")
 
         s = RTIMU.Settings(SETTINGS_FILE)
-        self.IMU = RTIMU.RTIMU(s)
+        self.imu = RTIMU.RTIMU(s)
         self.pressure = RTIMU.RTPressure(s)
 
-        if (not IMU.IMUInit()):
+        if (not self.imu.IMUInit()):
             print("IMU Init Failed")
             sys.exit(1)
         else:
@@ -39,7 +45,7 @@ class RTIMU:
         poll_interval = self.imu.IMUGetPollInterval()
         print("Recommended Poll Interval: %dmS\n" % poll_interval)
 
-    def computeHeight(pressure):
+    def computeHeight(self, pressure):
         return 44330.8 * (1 - pow(pressure / 1013.25, 0.190263))
 
     def getRPY(self):
@@ -57,10 +63,25 @@ class RTIMU:
 
     def getAltitude(self):
         pressureValid, pressure, _, _ = self.pressure.pressureRead()
-        if pressureValid
+        if pressureValid:
             return self.computeHeight(pressure)
         else:
             return -1
+
+    def getQuaternion(self):
+        if self.imu.IMURead():
+            # x, y, z = imu.getFusionData()
+            # print("%f %f %f" % (x,y,z))
+            data = self.imu.getIMUData()
+            fusionQPose = data["fusionQPose"]
+            quat = Quaternion()
+
+            quat.scalar = fusionQPose[0]
+            quat.x = fusionQPose[1]
+            quat.y = fusionQPose[2]
+            quat.z = fusionQPose[3]
+
+            return quat
 
     def getRate(self):
         return self.imu.IMUGetPollInterval()
