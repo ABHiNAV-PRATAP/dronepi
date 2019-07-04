@@ -7,9 +7,9 @@ class pid_controller:
         self.prevOffset = 0
 
     def updateOutput(self, currentPos, desiredPos):
-        if desiredPos == None:
-            print("no desired location set!")
-            return
+        if desiredPos is None:
+            print("E: no desired position set!")
+            return -1
 
         offset = desiredPos - currentPos
 

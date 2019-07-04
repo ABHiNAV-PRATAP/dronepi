@@ -11,9 +11,9 @@ MAX_THROTTLE = 10
 drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
 
 t_pid = PID(0.1, 0.001, 0.1)
-r_pid = PID(0.1, 0.001, 0.1)
-p_pid = PID(0.1, 0.001, 0.1)
-y_pid = PID(0.1, 0.001, 0.1)
+r_pid = PID(0.5, 0.01, 0.05)
+p_pid = PID(0.5, 0.01, 0.05)
+y_pid = PID(0.45, 0.01, 0.05)
 
 imu = IMU("RTIMULib")
 poll_interval = imu.getRate()
@@ -45,7 +45,12 @@ def get(x, y, t, yw):
                 yaw = y_pid.updateOutput(rpy.yaw, yw_scaled)
                 pitch = p_pid.updateOutput(rpy.pitch, y_scaled)
                 roll = r_pid.updateOutput(rpy.roll, x_scaled)
-                throttle = t_pid.updateOutput(imu.getAltitude(), t)
+
+                if manual:
+                        compute(yaw, pitch, roll, t)
+                else:
+                        throttle = t_pid.updateOutput(imu.getAltitude(), t)
+                        compute(yaw, pitch, roll, throttle)
 
                 compute(yaw, pitch, roll, throttle)
                 time.sleep(poll_interval * 1.0 / 1000.0)

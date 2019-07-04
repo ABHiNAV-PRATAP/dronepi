@@ -3,18 +3,21 @@ import os
 import sys
 import math
 
-class RPY():
+
+class RPY:
     roll = 0
     pitch = 0
     yaw = 0
 
-class Quaternion():
+
+class Quaternion:
     x = 0
     y = 0
     z = 0
     scalar = 0
 
-class IMU():
+
+class IMU:
     def __init__(self, SETTINGS_FILE):
         print("Using settings file " + SETTINGS_FILE + ".ini")
         if not os.path.exists(SETTINGS_FILE + ".ini"):
@@ -24,7 +27,7 @@ class IMU():
         self.imu = RTIMU.RTIMU(s)
         self.pressure = RTIMU.RTPressure(s)
 
-        if (not self.imu.IMUInit()):
+        if not self.imu.IMUInit():
             print("IMU Init Failed")
             sys.exit(1)
         else:
