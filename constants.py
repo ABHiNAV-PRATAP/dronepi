@@ -1,0 +1,27 @@
+# PID CONTROLLER CONSTANTS
+
+THROTTLE_KP  = 5
+THROTTLE_KD  = 0
+THROTTLE_KDT = 0
+
+ROLL_KP      = 5
+ROLL_KD      = 0
+ROLL_KDT     = 0
+
+PITCH_KP     = 5
+PITCH_KD     = 0
+PITCH_KDT    = 0
+
+YAW_KP       = 5
+YAW_KD       = 0
+YAW_KDT      = 0
+
+# PIN CONSTANTS
+
+FR_PIN       = 40
+BR_PIN       = 38
+FL_PIN       = 36
+BL_PIN       = 37
+AUX_PIN      = 31
+
+MAX_THROTTLE = 10

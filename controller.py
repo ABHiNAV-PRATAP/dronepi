@@ -4,16 +4,16 @@ from utils.IMU import IMU
 from drone import Drone
 from utils.client import Client
 from utils.pid_controller import pid_controller as PID
+from constants import *
 
 manual = False
-MAX_THROTTLE = 10
 
-drone = Drone(40, 38, 36, 37, 31, MAX_THROTTLE)
+drone = Drone(FR_PIN, BR_PIN, FL_PIN, BL_PIN, AUX_PIN, MAX_THROTTLE)
 
-t_pid = PID(0.1, 0.001, 0.1)
-r_pid = PID(0.5, 0.01, 0.05)
-p_pid = PID(0.5, 0.01, 0.05)
-y_pid = PID(0.45, 0.01, 0.05)
+t_pid = PID(THROTTLE_KP, THROTTLE_KD, THROTTLE_KDT)
+r_pid = PID(ROLL_KP, ROLL_KD, ROLL_KDT)
+p_pid = PID(PITCH_KP, PITCH_KD, PITCH_KDT)
+y_pid = PID(YAW_KP, YAW_KD, YAW_KDT)
 
 imu = IMU("RTIMULib")
 poll_interval = imu.getRate()
