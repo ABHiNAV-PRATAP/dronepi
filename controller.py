@@ -78,7 +78,7 @@ def initCamera():
 
 def initManual():
         print('manual mode')
-        c = Client(5005, '192.168.2.15', get)
+        c = Client(PORT, IP_ADDRESS, get)
         while True:
                 print('Connecting to server...')
                 rc = c.client.connect()

@@ -14,7 +14,7 @@ class Quaternion:
     x = 0
     y = 0
     z = 0
-    scalar = 0
+    w = 0
 
 
 class IMU:
@@ -79,7 +79,7 @@ class IMU:
             fusionQPose = data["fusionQPose"]
             quat = Quaternion()
 
-            quat.scalar = fusionQPose[0]
+            quat.w = fusionQPose[0]
             quat.x = fusionQPose[1]
             quat.y = fusionQPose[2]
             quat.z = fusionQPose[3]
