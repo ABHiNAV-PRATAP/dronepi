@@ -17,80 +17,96 @@ class Quaternion:
     w = 0
 
 
-class IMU:
-    def __init__(self, SETTINGS_FILE):
-        print("Using settings file " + SETTINGS_FILE + ".ini")
-        if not os.path.exists(SETTINGS_FILE + ".ini"):
-            print("Settings file does not exist, will be created")
+imu = None
+pressure = None
 
-        s = RTIMU.Settings(SETTINGS_FILE)
-        self.imu = RTIMU.RTIMU(s)
-        self.pressure = RTIMU.RTPressure(s)
 
-        if not self.imu.IMUInit():
-            print("IMU Init Failed")
-            sys.exit(1)
-        else:
-            print("IMU Init Succeeded");
+def initIMU(SETTINGS_FILE):
+    global imu
+    global pressure
 
-        # set fusion parameters
-        self.imu.setSlerpPower(0.02)
-        self.imu.setGyroEnable(True)
-        self.imu.setAccelEnable(True)
-        self.imu.setCompassEnable(True)
+    print("Using settings file " + SETTINGS_FILE + ".ini")
+    if not os.path.exists(SETTINGS_FILE + ".ini"):
+        print("Settings file does not exist, will be created")
 
-        if not self.pressure.pressureInit():
-            print("Pressure sensor init Failed")
-            sys.exit(1)
-        else:
-            print("Pressure sensor init Succeeded")
+    s = RTIMU.Settings(SETTINGS_FILE)
+    imu = RTIMU.RTIMU(s)
+    pressure = RTIMU.RTPressure(s)
 
-        poll_interval = self.imu.IMUGetPollInterval()
-        print("Recommended Poll Interval: %dmS\n" % poll_interval)
+    if not imu.IMUInit():
+        print("IMU Init Failed")
+        sys.exit(1)
+    else:
+        print("IMU Init Succeeded");
 
-    def computeHeight(self, pressure):
-        return 44330.8 * (1 - pow(pressure / 1013.25, 0.190263))
+    # set fusion parameters
+    imu.setSlerpPower(0.02)
+    imu.setGyroEnable(True)
+    imu.setAccelEnable(True)
+    imu.setCompassEnable(True)
 
-    def getRPY(self):
-        if self.imu.IMURead():
-            data = self.imu.getIMUData()
-            fusionPose = data["fusionPose"]
-            rpy = RPY()
-            rpy.roll = math.degrees(fusionPose[0])
-            rpy.pitch = math.degrees(fusionPose[1])
-            rpy.yaw = math.degrees(fusionPose[2])
+    if not pressure.pressureInit():
+        print("Pressure sensor init Failed")
+        sys.exit(1)
+    else:
+        print("Pressure sensor init Succeeded")
 
-            return rpy
 
-        else:
-            print('ERROR: cannot read from IMU')
-            return -1
+def computeHeight(pressure):
+    return 44330.8 * (1 - pow(pressure / 1013.25, 0.190263))
 
-    def getAltitude(self):
-        pressureValid, pressure, _, _ = self.pressure.pressureRead()
-        if pressureValid:
-            return self.computeHeight(pressure)
-        else:
-            return -1
 
-    def getQuaternion(self):
-        if self.imu.IMURead():
-            # x, y, z = imu.getFusionData()
-            # print("%f %f %f" % (x,y,z))
-            data = self.imu.getIMUData()
-            fusionQPose = data["fusionQPose"]
-            quat = Quaternion()
+def getRPY():
+    global imu
 
-            quat.w = fusionQPose[0]
-            quat.x = fusionQPose[1]
-            quat.y = fusionQPose[2]
-            quat.z = fusionQPose[3]
+    if imu.IMURead():
+        data = imu.getIMUData()
+        fusionPose = data["fusionPose"]
+        rpy = RPY()
+        rpy.roll = math.degrees(fusionPose[0])
+        rpy.pitch = math.degrees(fusionPose[1])
+        rpy.yaw = math.degrees(fusionPose[2])
 
-            return quat
+        return rpy
 
-        else:
-            print('ERROR: cannot read from IMU')
-            return -1
+    else:
+        print('ERROR: cannot read from IMU')
+        return -1
 
-    def getRate(self):
-        return self.imu.IMUGetPollInterval()
+
+def getAltitude():
+    global pressure
+
+    pressureValid, pressure, _, _ = pressure.pressureRead()
+    if pressureValid:
+        return computeHeight(pressure)
+    else:
+        return -1
+
+
+def getQuaternion():
+    global imu
+
+    if imu.IMURead():
+        # x, y, z = imu.getFusionData()
+        # print("%f %f %f" % (x,y,z))
+        data = imu.getIMUData()
+        fusionQPose = data["fusionQPose"]
+        quat = Quaternion()
+
+        quat.w = fusionQPose[0]
+        quat.x = fusionQPose[1]
+        quat.y = fusionQPose[2]
+        quat.z = fusionQPose[3]
+
+        return quat
+
+    else:
+        print('ERROR: cannot read from IMU')
+        return -1
+
+
+def getRate():
+    global imu
+
+    return imu.IMUGetPollInterval()
