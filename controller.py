@@ -36,7 +36,7 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
 def get(x, y, t, yw):
         x_scaled = translate(x, -1, 1, -20, 20)
         y_scaled = translate(y, -1, 1, -20, 20)
-        yw_scaled = translate(yw, -1, 1, 0, 360)
+        yw_scaled = translate(yw, -1, 1, -180, 180)
 
         while True:
                 rpy = imu.getRPY()
@@ -52,7 +52,6 @@ def get(x, y, t, yw):
                         throttle = t_pid.updateOutput(imu.getAltitude(), t)
                         compute(yaw, pitch, roll, throttle)
 
-                compute(yaw, pitch, roll, throttle)
                 time.sleep(poll_interval * 1.0 / 1000.0)
 
 
@@ -78,7 +77,7 @@ def initCamera():
 
 def initManual():
         print('manual mode')
-        c = Client(PORT, IP_ADDRESS, get)
+        c = Client(PORT, IP_ADDRESS, get, 'C:/Users/Yashas/Documents/Programming/dronepi/main/values.json')
         while True:
                 print('Connecting to server...')
                 rc = c.client.connect()
