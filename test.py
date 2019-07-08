@@ -2,7 +2,7 @@ import time
 
 import utils.IMU as imu
 
-imu.initIMU()
+imu.initIMU('RTIMULib')
 poll_interval = imu.getRate()
 
 while True:
