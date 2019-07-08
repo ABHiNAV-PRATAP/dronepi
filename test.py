@@ -1,8 +1,8 @@
 import time
 
-from utils.IMU import IMU
+import utils.IMU as imu
 
-imu = IMU("RTIMULib")
+imu.initIMU()
 poll_interval = imu.getRate()
 
 while True:
