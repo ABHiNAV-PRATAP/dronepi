@@ -20,36 +20,27 @@ class Quaternion:
 imu = None
 pressure = None
 
+s = RTIMU.Settings('RTIMULib')
+imu = RTIMU.RTIMU(s)
+pressure = RTIMU.RTPressure(s)
 
-def initIMU(SETTINGS_FILE):
-    global imu
-    global pressure
+if not imu.IMUInit():
+    print("IMU Init Failed")
+    sys.exit(1)
+else:
+    print("IMU Init Succeeded");
 
-    print("Using settings file " + SETTINGS_FILE + ".ini")
-    if not os.path.exists(SETTINGS_FILE + ".ini"):
-        print("Settings file does not exist, will be created")
+# set fusion parameters
+imu.setSlerpPower(0.02)
+imu.setGyroEnable(True)
+imu.setAccelEnable(True)
+imu.setCompassEnable(True)
 
-    s = RTIMU.Settings(SETTINGS_FILE)
-    imu = RTIMU.RTIMU(s)
-    pressure = RTIMU.RTPressure(s)
-
-    if not imu.IMUInit():
-        print("IMU Init Failed")
-        sys.exit(1)
-    else:
-        print("IMU Init Succeeded");
-
-    # set fusion parameters
-    imu.setSlerpPower(0.02)
-    imu.setGyroEnable(True)
-    imu.setAccelEnable(True)
-    imu.setCompassEnable(True)
-
-    if not pressure.pressureInit():
-        print("Pressure sensor init Failed")
-        sys.exit(1)
-    else:
-        print("Pressure sensor init Succeeded")
+if not pressure.pressureInit():
+    print("Pressure sensor init Failed")
+    sys.exit(1)
+else:
+    print("Pressure sensor init Succeeded")
 
 
 def computeHeight(pressure):
