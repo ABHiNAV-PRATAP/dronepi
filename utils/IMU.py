@@ -53,8 +53,6 @@ class IMU:
 
     def getRPY(self):
         if self.imu.IMURead():
-            # x, y, z = imu.getFusionData()
-            # print("%f %f %f" % (x,y,z))
             data = self.imu.getIMUData()
             fusionPose = data["fusionPose"]
             rpy = RPY()
@@ -63,6 +61,10 @@ class IMU:
             rpy.yaw = math.degrees(fusionPose[2])
 
             return rpy
+
+        else:
+            print('ERROR: cannot read from IMU')
+            return -1
 
     def getAltitude(self):
         pressureValid, pressure, _, _ = self.pressure.pressureRead()
@@ -85,6 +87,10 @@ class IMU:
             quat.z = fusionQPose[3]
 
             return quat
+
+        else:
+            print('ERROR: cannot read from IMU')
+            return -1
 
     def getRate(self):
         return self.imu.IMUGetPollInterval()
