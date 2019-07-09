@@ -3,6 +3,7 @@ import os
 import sys
 import math
 
+debug = False
 
 class RPY:
     roll = 0
@@ -61,7 +62,8 @@ def getRPY():
         return rpy
 
     else:
-        print('ERROR: cannot read from IMU')
+        if debug:
+            print('ERROR: cannot read from IMU')
         return -1
 
 
@@ -93,7 +95,8 @@ def getQuaternion():
         return quat
 
     else:
-        print('ERROR: cannot read from IMU')
+        if debug:
+            print('ERROR: cannot read from IMU')
         return -1
 
 

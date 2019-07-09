@@ -8,8 +8,10 @@ while True:
     rpy = imu.getRPY()
     quat = imu.getQuaternion()
 
-    if rpy is not -1 and quat is not -1:
-        print('roll: %s / pitch: %s / yaw: %s', rpy.roll, rpy.pitch, rpy.yaw)
-        print('x: %s / y: %s / z: %s / w: %S', quat.x, quat.y, quat.z, quat.w)
+    if rpy is not -1:
+        print('roll: %f / pitch: %f / yaw: %f' % (rpy.roll, rpy.pitch, rpy.yaw))
+
+    if quat is not -1:
+        print('x: %f / y: %f / z: %f / w: %f' % (quat.x, quat.y, quat.z, quat.w))
 
     time.sleep(poll_interval * 1.0 / 1000.0)
