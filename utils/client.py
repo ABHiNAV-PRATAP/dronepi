@@ -26,9 +26,11 @@ class Client:
             y = data['y']
             throttle = data['throttle']
             yaw = data['yaw']
+
             message = msg.split('>')
             header = message[0]
             value = round(float(message[1]), 2)
+
             if header == 'x':
                 x = value
                 data['x'] = value
