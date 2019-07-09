@@ -1,8 +1,7 @@
 import time
 
 import utils.IMU as imu
-from drone import Drone
-import clamp
+from subsystems.drone import Drone
 from utils.client import Client
 from utils.pid_controller import pid_controller as PID
 from constants import *
