@@ -1,12 +1,12 @@
 import time
 
-from utils.IMU import IMU
+import utils.IMU as imu
 from drone import Drone
 from utils.client import Client
 from utils.pid_controller import pid_controller as PID
 from constants import *
 
-manual = False
+manual = True
 
 drone = Drone(FR_PIN, BR_PIN, FL_PIN, BL_PIN, AUX_PIN, MAX_THROTTLE)
 
@@ -15,7 +15,6 @@ r_pid = PID(ROLL_KP, ROLL_KD, ROLL_KDT)
 p_pid = PID(PITCH_KP, PITCH_KD, PITCH_KDT)
 y_pid = PID(YAW_KP, YAW_KD, YAW_KDT)
 
-imu = IMU("RTIMULib")
 poll_interval = imu.getRate()
 
 # TODO: add pid loop to generate necessary roll and pitch references
@@ -40,7 +39,6 @@ def get(x, y, t, yw):
 
         while True:
                 rpy = imu.getRPY()
-                quat = imu.getQuaternion()
 
                 yaw = y_pid.updateOutput(rpy.yaw, yw_scaled)
                 pitch = p_pid.updateOutput(rpy.pitch, y_scaled)
