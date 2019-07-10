@@ -1,9 +1,7 @@
 import RTIMU
-import os
+from constants import *
 import sys
 import math
-
-debug = False
 
 class RPY:
     roll = 0
@@ -19,11 +17,9 @@ class Quaternion:
 
 
 imu = None
-pressure = None
 
 s = RTIMU.Settings('RTIMULib')
 imu = RTIMU.RTIMU(s)
-pressure = RTIMU.RTPressure(s)
 
 if not imu.IMUInit():
     print("IMU Init Failed")
@@ -36,16 +32,6 @@ imu.setSlerpPower(0.02)
 imu.setGyroEnable(True)
 imu.setAccelEnable(True)
 imu.setCompassEnable(True)
-
-if not pressure.pressureInit():
-    print("Pressure sensor init Failed")
-    sys.exit(1)
-else:
-    print("Pressure sensor init Succeeded")
-
-
-def computeHeight(pressure):
-    return 44330.8 * (1 - pow(pressure / 1013.25, 0.190263))
 
 
 def getRPY():
@@ -62,18 +48,8 @@ def getRPY():
         return rpy
 
     else:
-        if debug:
+        if DEBUG:
             print('ERROR: cannot read from IMU')
-        return -1
-
-
-def getAltitude():
-    global pressure
-
-    pressureValid, pressure, _, _ = pressure.pressureRead()
-    if pressureValid:
-        return computeHeight(pressure)
-    else:
         return -1
 
 
@@ -95,7 +71,7 @@ def getQuaternion():
         return quat
 
     else:
-        if debug:
+        if DEBUG:
             print('ERROR: cannot read from IMU')
         return -1
 

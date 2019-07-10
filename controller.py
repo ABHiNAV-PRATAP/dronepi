@@ -17,9 +17,6 @@ y_pid = PID(YAW_KP, YAW_KD, YAW_KDT)
 
 poll_interval = imu.getRate()
 
-# TODO: add pid loop to generate necessary roll and pitch references
-
-
 def translate(value, leftMin, leftMax, rightMin, rightMax):
         # Figure out how 'wide' each range is
         leftSpan = leftMax - leftMin
