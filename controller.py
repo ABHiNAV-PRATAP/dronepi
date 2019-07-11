@@ -2,6 +2,7 @@ import time
 
 import utils.IMU as imu
 from subsystems.drone import Drone
+import subsystems.clamp as clamp
 from utils.client import Client
 from utils.pid_controller import pid_controller as PID
 from constants import *
@@ -16,6 +17,7 @@ p_pid = PID(PITCH_KP, PITCH_KD, PITCH_KDT)
 y_pid = PID(YAW_KP, YAW_KD, YAW_KDT)
 
 poll_interval = imu.getRate()
+clamp.initClamp()
 
 def translate(value, leftMin, leftMax, rightMin, rightMax):
         # Figure out how 'wide' each range is
@@ -55,6 +57,9 @@ def compute(yaw, pitch, roll, thrust):
         pFL = thrust - yaw + pitch - roll
         pBR = thrust - yaw - pitch + roll
         pBL = thrust + yaw - pitch - roll
+
+        if DEBUG:
+                print('pFR: %f, pFL: %f, pBR: %f, pBL: %f' % (pFR, pFL, pBR, pBL))
 
         set(pFR, pFL, pBL, pBR)
 

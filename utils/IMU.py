@@ -1,5 +1,6 @@
 import RTIMU
 from constants import *
+import utils.barometer as bar
 import sys
 import math
 
@@ -74,6 +75,17 @@ def getQuaternion():
         if DEBUG:
             print('ERROR: cannot read from IMU')
         return -1
+
+
+def computeHeight(pressure):
+    return 44330.8 * (1 - pow(pressure / 1013.25, 0.190263));
+
+
+def getAltitude():
+    tp = bar.getTP()
+    alt = computeHeight(tp.pressure)
+
+    return alt
 
 
 def getRate():

@@ -82,6 +82,8 @@ bus.write_byte_data(0x77, 0xF4, 0x27)
 #		0xA0(00)	Stand_by time = 1000 ms
 bus.write_byte_data(0x77, 0xF5, 0xA0)
 
+print('barometer initialization successful')
+
 
 def getTP():
     # BMP280 address, 0x77(118)
