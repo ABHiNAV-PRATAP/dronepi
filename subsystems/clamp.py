@@ -1,5 +1,4 @@
 from adafruit_servokit import ServoKit
-# from constants import *
 
 kit = None
 
@@ -8,11 +7,12 @@ def initClamp():
 
     kit = ServoKit(channels=16)
 
-    kit.servo[0].set_pulse_width_range(750, 2250)
-    kit.servo[1].set_pulse_width_range(750, 2250)
+    kit.servo[0].set_pulse_width_range(1000, 2000)
+    kit.servo[1].set_pulse_width_range(1000, 2000)
 
-    # kit.servo[0].angle = CLAMP_INIT
-    # kit.servo[1].angle = CLAMP_INIT
+    for i in range(0, 180):
+        kit.servo[0].angle = i
+        kit.servo[1].angle = i
 
 def moveClamp(angle):
     kit.servo[0].angle = angle
