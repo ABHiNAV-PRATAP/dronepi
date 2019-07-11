@@ -7,20 +7,19 @@ def initClamp():
 
     kit = ServoKit(channels=16)
 
-    kit.servo[0].set_pulse_width_range(1000, 2000)
-    kit.servo[1].set_pulse_width_range(1000, 2000)
+    kit.servo[0].set_pulse_width_range(400, 2400)
+    kit.servo[1].set_pulse_width_range(400, 2400)
 
-    for i in range(0, 180):
-        kit.servo[0].angle = i
-        kit.servo[1].angle = i
+    kit.servo[0].angle = 180
+    kit.servo[1].angle = 180
 
 def moveClamp(angle):
     kit.servo[0].angle = angle
     kit.servo[1].angle = angle
 
 def clamp():
-    moveClamp(15)
+    moveClamp(140)
 
 def release():
-    moveClamp(0)
+    moveClamp(180)
 
