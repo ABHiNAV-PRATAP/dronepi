@@ -20,7 +20,7 @@ class Drone:
         # Create a simple PCA9685 class instance.
         self.pca = PCA9685(self.i2c_bus)
 
-        # Set the PWM frequency to 60hz.
+        # Set the PWM frequency to 50hz.
         self.pca.frequency = 50
 
         # Set the PWM duty cycle for channel zero to 50%. duty_cycle is 16 bits to match other PWM objects
@@ -42,7 +42,7 @@ class Drone:
         return rightMin + (valueScaled * rightSpan)
 
     def setMotor(self, p, motor):
-        dutyCycle = self.translate(p, 0, 100, 0, 65535)
+        dutyCycle = self.translate(p, 0, 100, 0, 6553)
         hexValue = int(hex(dutyCycle), 16)
         self.pca.channels[motor].duty_cycle = hexValue
         return
