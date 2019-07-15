@@ -9,7 +9,7 @@ from constants import *
 
 manual = True
 
-drone = Drone(FR_PIN, BR_PIN, FL_PIN, BL_PIN, AUX_PIN, MAX_THROTTLE)
+drone = Drone(FR_PIN, BR_PIN, FL_PIN, BL_PIN)
 
 t_pid = PID(THROTTLE_KP, THROTTLE_KD, THROTTLE_KDT)
 r_pid = PID(ROLL_KP, ROLL_KD, ROLL_KDT)
@@ -38,6 +38,9 @@ def get(x, y, t, yw):
 
         while True:
                 rpy = imu.getRPY()
+
+                if rpy == -1:
+                        continue
 
                 yaw = y_pid.updateOutput(rpy.yaw, yw_scaled)
                 pitch = p_pid.updateOutput(rpy.pitch, y_scaled)
@@ -77,7 +80,7 @@ def initCamera():
 
 def initManual():
         print('manual mode')
-        c = Client(PORT, IP_ADDRESS, get, 'C:/Users/Yashas/Documents/Programming/dronepi/main/values.json')
+        c = Client(PORT, IP_ADDRESS, get)
         while True:
                 print('Connecting to server...')
                 rc = c.client.connect()

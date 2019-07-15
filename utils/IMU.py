@@ -26,7 +26,7 @@ if not imu.IMUInit():
     print("IMU Init Failed")
     sys.exit(1)
 else:
-    print("IMU Init Succeeded");
+    print("IMU Init Succeeded")
 
 # set fusion parameters
 imu.setSlerpPower(0.02)

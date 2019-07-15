@@ -1,39 +1,34 @@
-import RPi.GPIO as GPIO
+from board import SCL, SDA
+import busio
+
+# Import the PCA9685 module.
+from adafruit_pca9685 import PCA9685
 import time
 
-
 class Drone:
-    def __init__(self, frontRightPin, backRightPin, frontLeftPin, backLeftPin, auxPin, max_throttle):
-        self.frontRightPin = frontRightPin
-        self.backRightPin = backRightPin
-        self.frontLeftPin = frontLeftPin
-        self.backLeftPin = backLeftPin
 
-        self.auxPin = auxPin
 
-        self.min_throttle = 4
-        self.max_throttle = max_throttle
+    def __init__(self, frontRightPin, backRightPin, frontLeftPin, backLeftPin):
+        self.mFR = frontRightPin
+        self.mBR = backRightPin
+        self.mFL = frontLeftPin
+        self.mBL = backLeftPin
 
-        GPIO.cleanup()
-        GPIO.setmode(GPIO.BOARD)
+        # Create the I2C bus interface.
+        self.i2c_bus = busio.I2C(SCL, SDA)
 
-        GPIO.setup(self.frontRightPin, GPIO.OUT)
-        GPIO.setup(self.backRightPin, GPIO.OUT)
-        GPIO.setup(self.frontLeftPin, GPIO.OUT)
-        GPIO.setup(self.backLeftPin, GPIO.OUT)
-        GPIO.setup(self.auxPin, GPIO.OUT)
+        # Create a simple PCA9685 class instance.
+        self.pca = PCA9685(self.i2c_bus)
 
-        self.mFR = GPIO.PWM(self.frontRightPin, 50)
-        self.mBR = GPIO.PWM(self.backRightPin, 50)
-        self.mFL = GPIO.PWM(self.frontLeftPin, 50)
-        self.mBL = GPIO.PWM(self.backLeftPin, 50)
-        self.aux = GPIO.PWM(self.auxPin, 50)
+        # Set the PWM frequency to 60hz.
+        self.pca.frequency = 50
 
-        self.mFR.start(0)
-        self.mBR.start(0)
-        self.mFL.start(0)
-        self.mBL.start(0)
-        self.aux.start(7)
+        # Set the PWM duty cycle for channel zero to 50%. duty_cycle is 16 bits to match other PWM objects
+        # but the PCA9685 will only actually give 12 bits of resolution.
+        self.pca.channels[self.mFR].duty_cycle = 0x0000
+        self.pca.channels[self.mBR].duty_cycle = 0x0000
+        self.pca.channels[self.mFL].duty_cycle = 0x0000
+        self.pca.channels[self.mBL].duty_cycle = 0x0000
 
     def translate(self, value, leftMin, leftMax, rightMin, rightMax):
         # Figure out how 'wide' each range is
@@ -47,8 +42,9 @@ class Drone:
         return rightMin + (valueScaled * rightSpan)
 
     def setMotor(self, p, motor):
-        dutyCycle = self.translate(p, 0, 100, self.min_throttle, self.max_throttle)
-        motor.ChangeDutyCycle(dutyCycle)
+        dutyCycle = self.translate(p, 0, 100, 0, 65535)
+        hexValue = int(hex(dutyCycle), 16)
+        self.pca.channels[motor].duty_cycle = hexValue
         return
 
     def arm(self, p):

@@ -20,11 +20,11 @@ YAW_KDT      = 0.01
 
 # PIN CONSTANTS
 
-FR_PIN       = 40
-BR_PIN       = 38
-FL_PIN       = 36
-BL_PIN       = 37
-AUX_PIN      = 31
+FR_PIN       = 8
+BR_PIN       = 9
+FL_PIN       = 10
+BL_PIN       = 11
+AUX_PIN      = None
 
 MAX_THROTTLE = 10
 
